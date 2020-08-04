@@ -21,6 +21,22 @@ player_angle = 90
 play_ang_change = 0
 speed = 1
 
+# Bullet
+
+bullets = []
+
+class Bullet():
+
+  def __init__(self, ang, x, y):
+    bullets.append(self)
+    self.img = pygame.image.load(os.path.join('Assets','laser.png'))
+    self.angle = ang
+    self.pos_x = x
+    self.pos_y = y
+    self.x_change = 0
+    self.y_change = 0
+
+
 # Colors
 
 black = (0, 0, 0)

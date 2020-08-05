@@ -21,23 +21,6 @@ player_angle = 90
 play_ang_change = 0
 speed = 3
 
-# Bullet
-
-bullets = []
-
-
-class Bullet:
-
-    def __init__(self, ang, x, y):
-        bullets.append(self)
-        self.img = pygame.image.load(os.path.join('Assets', 'laser.png'))
-        self.angle = ang
-        self.pos_x = x
-        self.pos_y = y
-        self.x_change = 0
-        self.y_change = 0
-
-
 # Colors
 
 black = (0, 0, 0)
@@ -55,6 +38,29 @@ def get_speeds(ang, vel):
     vel_x = math.cos(ang_rad) * vel
     vel_y = math.sin(ang_rad) * vel
     return (vel_x, vel_y)
+
+
+# Bullet
+
+bullets = []
+
+
+class Bullet:
+
+    def __init__(self, ang, x, y):
+        bullets.append(self)
+        self.img = pygame.image.load(os.path.join('Assets', 'missile.png'))
+        self.angle = ang
+        self.pos_x = x
+        self.pos_y = y
+        self.x_change = 0
+        self.y_change = 0
+        self.state = 'ready'
+        self.speed = 4.5
+
+    def fire_bullet(self):
+        self.state = 'fire'
+        self.x_change, self.y_change = get_speeds(self.angle, self.speed)
 
 
 def draw():
@@ -75,6 +81,26 @@ def draw():
 
     # centers and draws image
     window.blit(player_img_copy, (playerX - center_x, playerY - center_y))
+
+    # Bullet
+
+    for bullet in bullets:
+
+        if bullet.state == 'fire':
+            # Allows bullet to "move" through the screen
+            bullet.pos_x += bullet.x_change
+            bullet.pos_y -= bullet.y_change
+
+            # Centers the bullet image
+            bullet.img_copy = pygame.transform.rotozoom(bullet.img, bullet.angle, 1)
+
+            # Draws bullet img
+            window.blit(bullet.img_copy, (
+                bullet.pos_x - bullet.img_copy.get_width() / 2, bullet.pos_y - bullet.img_copy.get_height() / 2)
+                        )
+
+            if not 0 < bullet.pos_x < 800 or not 0 < bullet.pos_y < 600:
+                bullet.state = 'ready'
 
     # Drag
 
@@ -112,13 +138,16 @@ while run:
             run = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                play_ang_change = 7.5
+                play_ang_change = 6
             if event.key == pygame.K_RIGHT:
-                play_ang_change = -7.5
+                play_ang_change = -6
             if event.key == pygame.K_UP:
                 drag = False
                 speed = 2.5
                 playerX_change, playerY_change = get_speeds(player_angle, speed)
+            if event.key == pygame.K_SPACE:
+                Bullet(player_angle, playerX, playerY)
+                bullets[-1].fire_bullet()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 play_ang_change = 0

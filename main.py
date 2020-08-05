@@ -19,14 +19,14 @@ playerX_change = 0
 playerY_change = 0
 player_angle = 90
 play_ang_change = 0
-speed = 1
+speed = 3
 
 # Bullet
 
 bullets = []
 
 
-class Bullet():
+class Bullet:
 
     def __init__(self, ang, x, y):
         bullets.append(self)
@@ -45,6 +45,7 @@ black = (0, 0, 0)
 # Game Variables
 run = True
 drag = False
+
 
 # Game Functions
 
@@ -66,8 +67,7 @@ def draw():
 
     # Player
 
-    player_img_copy = pygame.transform.rotozoom(
-        player_img, player_angle, 1)  # rotates player
+    player_img_copy = pygame.transform.rotozoom(player_img, player_angle, 1)  # rotates player
 
     # Determines amount to subtract by to center
     center_x = player_img_copy.get_width() / 2
@@ -112,14 +112,13 @@ while run:
             run = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                play_ang_change = 0.75
+                play_ang_change = 7.5
             if event.key == pygame.K_RIGHT:
-                play_ang_change = -0.75
+                play_ang_change = -7.5
             if event.key == pygame.K_UP:
                 drag = False
-                speed = 1
-                playerX_change, playerY_change = get_speeds(
-                    player_angle, speed)
+                speed = 2.5
+                playerX_change, playerY_change = get_speeds(player_angle, speed)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 play_ang_change = 0

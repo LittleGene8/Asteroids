@@ -3,6 +3,7 @@
 import pygame
 import math
 import os.path
+from random import *
 
 pygame.init()
 
@@ -70,16 +71,23 @@ asteroids = []
 
 class Asteroid:
 
-    def __init__(self, size, ang, x, y):
+    def __init__(self, size, x, y):
         asteroids.append(self)
-        self.img = 0
-        self.angle = ang
+        self.img = pygame.image.load(os.path.join('Assets', 'asteroid_' + str(size) + '.png'))
+        self.angle = random.randint(0,360)
         self.pos_x = x
         self.pos_y = y
         self.x_change = 0
         self.y_change = 0
         self.size = size
+        # ready --> not on screen, intact --> on screen hasn't been hit, destroyed
+        self.state = 'ready' 
         self.speed = 1.5
+    
+    def create_asteroid(self):
+      self.state == 'intact'
+      self.x_change, self.y_change = get_speeds(self.angle, self.speed)
+      
 
 
 def draw():
@@ -146,11 +154,14 @@ def draw():
 # Game Loop
 while run:
 
+    # Screen background
     window.fill(black)
 
     draw()
 
     pygame.display.update()
+
+    # Events
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

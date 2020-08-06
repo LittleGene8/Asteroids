@@ -63,6 +63,25 @@ class Bullet:
         self.x_change, self.y_change = get_speeds(self.angle, self.speed)
 
 
+# Asteroid
+
+asteroids = []
+
+
+class Asteroid:
+
+    def __init__(self, size, ang, x, y):
+        asteroids.append(self)
+        self.img = 0
+        self.angle = ang
+        self.pos_x = x
+        self.pos_y = y
+        self.x_change = 0
+        self.y_change = 0
+        self.size = size
+        self.speed = 1.5
+
+
 def draw():
     global player_angle
     global playerX

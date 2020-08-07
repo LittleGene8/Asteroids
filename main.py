@@ -29,7 +29,7 @@ black = (0, 0, 0)
 # Game Variables
 run = True
 drag = False
-
+clock = pygame.time.Clock()
 
 # Game Functions
 
@@ -153,6 +153,8 @@ def draw():
 
 # Game Loop
 while run:
+
+    clock.tick(60)
 
     # Screen background
     window.fill(black)

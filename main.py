@@ -71,12 +71,12 @@ asteroids = []
 
 class Asteroid:
 
-    def __init__(self, size, x, y):
+    def __init__(self, size):
         asteroids.append(self)
         self.img = pygame.image.load(os.path.join('Assets', 'asteroid_' + str(size) + '.png'))
         self.angle = random.randint(0,360)
-        self.pos_x = x
-        self.pos_y = y
+        self.pos_x = random.randint(0,800)
+        self.pos_y = random.randint(0,600)
         self.x_change = 0
         self.y_change = 0
         self.size = size

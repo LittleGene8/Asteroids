@@ -128,6 +128,7 @@ def draw():
 
             if not 0 < bullet.pos_x < 800 or not 0 < bullet.pos_y < 600:
                 bullet.state = 'ready'
+                bullets.remove(bullet)
 
     # Drag
 

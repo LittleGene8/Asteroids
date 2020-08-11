@@ -31,6 +31,7 @@ run = True
 drag = False
 clock = pygame.time.Clock()
 
+
 # Game Functions
 
 
@@ -38,7 +39,7 @@ def get_speeds(ang, vel):
     ang_rad = math.radians(ang)
     vel_x = math.cos(ang_rad) * vel
     vel_y = math.sin(ang_rad) * vel
-    return (vel_x, vel_y)
+    return [vel_x, vel_y]
 
 
 # Bullet
@@ -74,20 +75,19 @@ class Asteroid:
     def __init__(self, size):
         asteroids.append(self)
         self.img = pygame.image.load(os.path.join('Assets', 'asteroid_' + str(size) + '.png'))
-        self.angle = random.randint(0,360)
-        self.pos_x = random.randint(0,800)
-        self.pos_y = random.randint(0,600)
+        self.angle = Random.randint(Random(), 0, 360)
+        self.pos_x = Random.randint(Random(), 0, 800)
+        self.pos_y = Random.randint(Random(), 0, 600)
         self.x_change = 0
         self.y_change = 0
         self.size = size
         # ready --> not on screen, intact --> on screen hasn't been hit, destroyed
-        self.state = 'ready' 
+        self.state = 'ready'
         self.speed = 1.5
-    
+
     def create_asteroid(self):
-      self.state == 'intact'
-      self.x_change, self.y_change = get_speeds(self.angle, self.speed)
-      
+        self.state = 'intact'
+        self.x_change, self.y_change = get_speeds(self.angle, self.speed)
 
 
 def draw():
@@ -97,6 +97,27 @@ def draw():
     global speed
     global playerX_change
     global playerY_change
+
+    # Asteroids
+
+    for asteroid in asteroids:
+
+        if asteroid.state == 'intact':
+            # Allows asteroid to move through the screen
+            asteroid.pos_x += asteroid.x_change
+            asteroid.pos_y -= asteroid.y_change
+
+            # Centers the asteroid image
+            asteroid.img_copy = pygame.transform.rotozoom(asteroid.img, asteroid.angle, 1)
+
+            # Draws bullet img
+            window.blit(asteroid.img_copy, (
+                asteroid.pos_x - asteroid.img_copy.get_width() / 2, asteroid.pos_y - asteroid.img_copy.get_height() / 2)
+                        )
+
+            if not 0 < asteroid.pos_x < 800 or not 0 < asteroid.pos_y < 600:
+                asteroid.state = 'ready'
+                asteroids.remove(asteroid)
 
     # Player
 
@@ -133,7 +154,7 @@ def draw():
     # Drag
 
     if drag:
-        speed *= 0.991
+        speed *= 0.99
         playerX_change, playerY_change = get_speeds(temp_angle, speed)
 
     player_angle += play_ang_change  # Adds onto angle based on controls
@@ -181,6 +202,9 @@ while run:
             if event.key == pygame.K_SPACE:
                 Bullet(player_angle, playerX, playerY)
                 bullets[-1].fire_bullet()
+            if event.key == pygame.K_x:
+                Asteroid('large')
+                asteroids[-1].create_asteroid()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 play_ang_change = 0

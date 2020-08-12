@@ -30,7 +30,12 @@ black = (0, 0, 0)
 run = True
 drag = False
 clock = pygame.time.Clock()
+score = 0
 
+# Score
+pygame.font.init()
+
+score_font = pygame.font.SysFont('Comic Sans MS', 30)
 
 # Game Functions
 
@@ -90,6 +95,15 @@ class Asteroid:
         self.x_change, self.y_change = get_speeds(self.angle, self.speed)
 
 
+# Player Collision function
+
+def is_collision(x1, y1, x2, y2, gap):
+    distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    if distance <= gap:
+        return True
+    return False
+
+
 def draw():
     global player_angle
     global playerX
@@ -97,10 +111,26 @@ def draw():
     global speed
     global playerX_change
     global playerY_change
+    global score
+
+    # Draw Score
+
+    text = score_font.render('Score: ' + str(score), True, (255, 255, 255))
+    window.blit(text, (0,0))
 
     # Asteroids
 
     for asteroid in asteroids:
+
+        for bullet in bullets:
+            if is_collision(bullet.pos_x, bullet.pos_y, asteroid.pos_x, asteroid.pos_y, 70):
+                score += 1
+                bullet.state = 'ready'
+                bullets.remove(bullet)
+                asteroid.state = 'destroyed'
+                asteroids.remove(asteroid)
+
+        asteroid.angle += 1
 
         if asteroid.state == 'intact':
             # Allows asteroid to move through the screen
@@ -115,7 +145,7 @@ def draw():
                 asteroid.pos_x - asteroid.img_copy.get_width() / 2, asteroid.pos_y - asteroid.img_copy.get_height() / 2)
                         )
 
-            if not 0 < asteroid.pos_x < 800 or not 0 < asteroid.pos_y < 600:
+            if not 0 < asteroid.pos_x < 850 or not 0 < asteroid.pos_y < 650:
                 asteroid.state = 'ready'
                 asteroids.remove(asteroid)
 

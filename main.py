@@ -225,6 +225,8 @@ def draw():
     if playerY >= 580:
         playerY = 580
 
+# Continous Asteroid spawning
+pygame.time.set_timer(pygame.USEREVENT+1, 500)
 
 # Game Loop
 while run:
@@ -255,9 +257,10 @@ while run:
             if event.key == pygame.K_SPACE:
                 Bullet(player_angle, playerX, playerY)
                 bullets[-1].fire_bullet()
-            if event.key == pygame.K_x:
-                Asteroid('large', 70, randint(0, 800), randint(0, 600))
-                asteroids[-1].create_asteroid()
+        if event.type == pygame.USEREVENT+1:
+          if len(asteroids) <= 25:
+            Asteroid('large', 70, randint(0, 800), randint(0, 600))
+            asteroids[-1].create_asteroid()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 play_ang_change = 0

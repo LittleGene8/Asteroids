@@ -37,6 +37,7 @@ pygame.font.init()
 
 score_font = pygame.font.SysFont('Comic Sans MS', 30)
 
+
 # Game Functions
 
 
@@ -95,7 +96,23 @@ class Asteroid:
         self.x_change, self.y_change = get_speeds(self.angle, self.speed)
 
 
-# Player Collision function
+def baby_asteroids(instance):
+    global asteroids
+
+    if instance.state == 'destroyed':
+        if instance.size == 'large':
+            for i in range(2):
+                Asteroid('medium')
+                asteroids[-1].create_asteroid()
+        elif instance.size == 'medium':
+            for i in range(3):
+                Asteroid('small')
+                asteroids[-1].create_asteroid()
+
+        asteroids.remove(instance)
+
+            # Player Collision function
+
 
 def is_collision(x1, y1, x2, y2, gap):
     distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
@@ -116,7 +133,7 @@ def draw():
     # Draw Score
 
     text = score_font.render('Score: ' + str(score), True, (255, 255, 255))
-    window.blit(text, (0,0))
+    window.blit(text, (0, 0))
 
     # Asteroids
 
@@ -128,7 +145,7 @@ def draw():
                 bullet.state = 'ready'
                 bullets.remove(bullet)
                 asteroid.state = 'destroyed'
-                asteroids.remove(asteroid)
+                baby_asteroids(asteroid)
 
         asteroid.angle += 1
 
@@ -145,7 +162,11 @@ def draw():
                 asteroid.pos_x - asteroid.img_copy.get_width() / 2, asteroid.pos_y - asteroid.img_copy.get_height() / 2)
                         )
 
-            if not 0 < asteroid.pos_x < 850 or not 0 < asteroid.pos_y < 650:
+            # Boundaries
+            if asteroid.pos_x <= -150 or asteroid.pos_x >= 1000:
+                asteroid.state = 'ready'
+                asteroids.remove(asteroid)
+            if asteroid.pos_y <= -150 or asteroid.pos_y >= 700:
                 asteroid.state = 'ready'
                 asteroids.remove(asteroid)
 

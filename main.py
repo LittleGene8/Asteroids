@@ -78,15 +78,16 @@ asteroids = []
 
 class Asteroid:
 
-    def __init__(self, size):
+    def __init__(self, size, gap, x, y):
         asteroids.append(self)
         self.img = pygame.image.load(os.path.join('Assets', 'asteroid_' + str(size) + '.png'))
         self.angle = Random.randint(Random(), 0, 360)
-        self.pos_x = Random.randint(Random(), 0, 800)
-        self.pos_y = Random.randint(Random(), 0, 600)
+        self.pos_x = x
+        self.pos_y = y
         self.x_change = 0
         self.y_change = 0
         self.size = size
+        self.gap = gap
         # ready --> not on screen, intact --> on screen hasn't been hit, destroyed
         self.state = 'ready'
         self.speed = 1.5
@@ -96,17 +97,17 @@ class Asteroid:
         self.x_change, self.y_change = get_speeds(self.angle, self.speed)
 
 
-def baby_asteroids(instance):
+def baby_asteroids(instance, pos_x, pos_y):
     global asteroids
 
     if instance.state == 'destroyed':
         if instance.size == 'large':
             for i in range(2):
-                Asteroid('medium')
+                Asteroid('medium', 30, pos_x, pos_y)
                 asteroids[-1].create_asteroid()
         elif instance.size == 'medium':
             for i in range(3):
-                Asteroid('small')
+                Asteroid('small', 15, pos_x, pos_y)
                 asteroids[-1].create_asteroid()
 
         asteroids.remove(instance)
@@ -139,13 +140,14 @@ def draw():
 
     for asteroid in asteroids:
 
+        #  Checks if any asteroid was hit by any bullet
         for bullet in bullets:
-            if is_collision(bullet.pos_x, bullet.pos_y, asteroid.pos_x, asteroid.pos_y, 70):
+            if is_collision(bullet.pos_x, bullet.pos_y, asteroid.pos_x, asteroid.pos_y, asteroid.gap):
                 score += 1
                 bullet.state = 'ready'
                 bullets.remove(bullet)
                 asteroid.state = 'destroyed'
-                baby_asteroids(asteroid)
+                baby_asteroids(asteroid, asteroid.pos_x, asteroid.pos_y)
 
         asteroid.angle += 1
 
@@ -254,7 +256,7 @@ while run:
                 Bullet(player_angle, playerX, playerY)
                 bullets[-1].fire_bullet()
             if event.key == pygame.K_x:
-                Asteroid('large')
+                Asteroid('large', 70, randint(0, 800), randint(0, 600))
                 asteroids[-1].create_asteroid()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:

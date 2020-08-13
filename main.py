@@ -171,6 +171,7 @@ def draw():
             if asteroid.pos_y <= -150 or asteroid.pos_y >= 700:
                 asteroid.state = 'ready'
                 asteroids.remove(asteroid)
+                
 
     # Player
 
@@ -231,7 +232,7 @@ pygame.time.set_timer(pygame.USEREVENT+1, 500)
 # Game Loop
 while run:
 
-    clock.tick(60)
+    clock.tick(50)
 
     # Screen background
     window.fill(black)
@@ -258,8 +259,9 @@ while run:
                 Bullet(player_angle, playerX, playerY)
                 bullets[-1].fire_bullet()
         if event.type == pygame.USEREVENT+1:
-          if len(asteroids) <= 25:
-            Asteroid('large', 70, randint(0, 800), randint(0, 600))
+          if len(asteroids) <= 15:
+            ast = choice( ['large', 'medium'])
+            Asteroid(ast, 70, randint(0, 800), randint(0, 600))
             asteroids[-1].create_asteroid()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:

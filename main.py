@@ -32,8 +32,12 @@ drag = False
 clock = pygame.time.Clock()
 score = 0
 
-# Score
 pygame.font.init()
+
+game_over_font = pygame.font.SysFont('Comic Sans MS', 100)
+
+# Score
+
 
 score_font = pygame.font.SysFont('Comic Sans MS', 30)
 
@@ -93,8 +97,11 @@ class Asteroid:
         self.speed = 1.5
 
     def create_asteroid(self):
+      if not is_collision(self.pos_x, self.pos_y, playerX, playerY, 15):
         self.state = 'intact'
         self.x_change, self.y_change = get_speeds(self.angle, self.speed)
+      else:
+        asteroids.remove(self)
 
 
 def baby_asteroids(instance, pos_x, pos_y):
@@ -110,9 +117,7 @@ def baby_asteroids(instance, pos_x, pos_y):
                 Asteroid('small', 15, pos_x, pos_y)
                 asteroids[-1].create_asteroid()
 
-        asteroids.remove(instance)
-
-            # Player Collision function
+# Player Collision function
 
 
 def is_collision(x1, y1, x2, y2, gap):
@@ -140,37 +145,38 @@ def draw():
 
     for asteroid in asteroids:
 
-        #  Checks if any asteroid was hit by any bullet
-        for bullet in bullets:
-            if is_collision(bullet.pos_x, bullet.pos_y, asteroid.pos_x, asteroid.pos_y, asteroid.gap):
-                score += 1
-                bullet.state = 'ready'
-                bullets.remove(bullet)
-                asteroid.state = 'destroyed'
-                baby_asteroids(asteroid, asteroid.pos_x, asteroid.pos_y)
+      #  Checks if any asteroid was hit by any bullet
+      for bullet in bullets:
+          if is_collision(bullet.pos_x, bullet.pos_y, asteroid.pos_x, asteroid.pos_y, asteroid.gap):
+              score += 1
+              bullet.state = 'ready'
+              bullets.remove(bullet)
+              asteroid.state = 'destroyed'
+              baby_asteroids(asteroid, asteroid.pos_x, asteroid.pos_y)
+              asteroids.remove(asteroid)
 
-        asteroid.angle += 1
+      asteroid.angle += 1
 
-        if asteroid.state == 'intact':
-            # Allows asteroid to move through the screen
-            asteroid.pos_x += asteroid.x_change
-            asteroid.pos_y -= asteroid.y_change
+      if asteroid.state == 'intact':
+          # Allows asteroid to move through the screen
+          asteroid.pos_x += asteroid.x_change
+          asteroid.pos_y -= asteroid.y_change
 
-            # Centers the asteroid image
-            asteroid.img_copy = pygame.transform.rotozoom(asteroid.img, asteroid.angle, 1)
+          # Centers the asteroid image
+          asteroid.img_copy = pygame.transform.rotozoom(asteroid.img, asteroid.angle, 1)
 
-            # Draws bullet img
-            window.blit(asteroid.img_copy, (
-                asteroid.pos_x - asteroid.img_copy.get_width() / 2, asteroid.pos_y - asteroid.img_copy.get_height() / 2)
-                        )
+          # Draws bullet img
+          window.blit(asteroid.img_copy, (
+              asteroid.pos_x - asteroid.img_copy.get_width() / 2, asteroid.pos_y - asteroid.img_copy.get_height() / 2)
+                      )
 
-            # Boundaries
-            if asteroid.pos_x <= -150 or asteroid.pos_x >= 1000:
-                asteroid.state = 'ready'
-                asteroids.remove(asteroid)
-            if asteroid.pos_y <= -150 or asteroid.pos_y >= 700:
-                asteroid.state = 'ready'
-                asteroids.remove(asteroid)
+          # Boundaries
+          if asteroid.pos_x <= -150 or asteroid.pos_x >= 1000:
+              asteroid.state = 'ready'
+              asteroids.remove(asteroid)
+          if asteroid.pos_y <= -150 or asteroid.pos_y >= 700:
+              asteroid.state = 'ready'
+              asteroids.remove(asteroid)
                 
 
     # Player
@@ -231,41 +237,40 @@ pygame.time.set_timer(pygame.USEREVENT+1, 500)
 
 # Game Loop
 while run:
+  clock.tick(50)
 
-    clock.tick(50)
+  # Screen background
+  window.fill(black)
 
-    # Screen background
-    window.fill(black)
+  draw()
 
-    draw()
+  pygame.display.update()
 
-    pygame.display.update()
+  # Events
 
-    # Events
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                play_ang_change = 6
-            if event.key == pygame.K_RIGHT:
-                play_ang_change = -6
-            if event.key == pygame.K_UP:
-                drag = False
-                speed = 2.5
-                playerX_change, playerY_change = get_speeds(player_angle, speed)
-            if event.key == pygame.K_SPACE:
-                Bullet(player_angle, playerX, playerY)
-                bullets[-1].fire_bullet()
-        if event.type == pygame.USEREVENT+1:
-          if len(asteroids) <= 15:
-            ast = choice( ['large', 'medium'])
-            Asteroid(ast, 70, randint(0, 800), randint(0, 600))
-            asteroids[-1].create_asteroid()
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                play_ang_change = 0
-            if event.key == pygame.K_UP:
-                temp_angle = player_angle
-                drag = True
+  for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+          run = False
+      if event.type == pygame.KEYDOWN:
+          if event.key == pygame.K_LEFT:
+              play_ang_change = 6
+          if event.key == pygame.K_RIGHT:
+              play_ang_change = -6
+          if event.key == pygame.K_UP:
+              drag = False
+              speed = 2.5
+              playerX_change, playerY_change = get_speeds(player_angle, speed)
+          if event.key == pygame.K_SPACE:
+              Bullet(player_angle, playerX, playerY)
+              bullets[-1].fire_bullet()
+      if event.type == pygame.USEREVENT+1:
+        if len(asteroids) <= 15:
+          ast = choice( ['large', 'medium'])
+          Asteroid(ast, 70, randint(0, 800), randint(0, 600))
+          asteroids[-1].create_asteroid()
+      if event.type == pygame.KEYUP:
+          if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+              play_ang_change = 0
+          if event.key == pygame.K_UP:
+              temp_angle = player_angle
+              drag = True
